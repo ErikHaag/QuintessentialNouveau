@@ -1,13 +1,7 @@
-﻿class patch_WorkshopManager
+﻿#pragma warning disable CS0626 // Method, operator, or accessor is marked external and has no attributes on it
+#pragma warning disable IDE1006 // Naming Styles
+
+class patch_WorkshopManager
 {
-    public extern void orig_method_670();
-
-    // the valve's been stuck, corroded by the money.
-    public void method_670()
-    {
-        ((WorkshopManager)(object)this).method_2303();
-        ((WorkshopManager)(object)this).method_2304();
-    }
-
-
+    
 }

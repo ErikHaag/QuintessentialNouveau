@@ -62,4 +62,10 @@ SomeZipIDontLike.zip");
             throw;
         }
     }
+
+    public static void PostLoad()
+    {
+        Logger.Log("Hi!");
+        Logger.Log(class_264.field_2186);
+    }
 }

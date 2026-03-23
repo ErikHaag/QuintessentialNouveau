@@ -2,65 +2,46 @@
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.InlineRT;
-using Quintessential;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 
 namespace MonoMod;
 
-[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchSettingsStaticInit))]
-class PatchSettingsStaticInit : Attribute { }
-
-[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchScoreManagerLoad))]
-class PatchScoreManagerLoad : Attribute { }
+[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchSavePath))]
+class PatchSavePath : Attribute { }
 
 public class MonoModRules
 {
-    public static void PatchSettingsStaticInit(MethodDefinition method, CustomAttribute attrib)
+    public static void PatchSavePath(MethodDefinition method, CustomAttribute attrib)
     {
-        MonoModRule.Modder.Log("Patching settings static init");
-
+        MonoModRule.Modder.Log("Patching save path");
         if (!method.HasBody)
         {
-            Console.WriteLine("Failed to disable Steam setting in class_93; no body.");
+            Console.WriteLine("Failed to mod save path; No body.");
             throw new Exception();
         }
 
-        ILCursor gremlin = new(new ILContext(method));
-
-        if (!gremlin.TryGotoNext(MoveType.Before,
-            instr => instr.MatchLdcI4(1),
-            instr => instr.MatchStsfld("class_93", "field_551")))
+        Console.WriteLine("A");
+        ILCursor cursor = new(new ILContext(method));
+        Console.WriteLine("B");
+        if (!cursor.TryGotoNext(MoveType.After,
+            instr => instr.MatchLdstr("NonSteamUser"),
+            instr => instr.MatchStloc(0),
+            instr => instr.MatchNop()))
         {
-            Console.WriteLine("Failed to disable Steam setting in class_93; no assignment.");
+            Console.WriteLine("Failed to mod save path; No static string load.");
             throw new Exception();
         }
+        Console.WriteLine("C");
+        cursor.MoveAfterLabels();
 
-        gremlin.Remove();
-        gremlin.Emit(OpCodes.Ldc_I4_0);
+        TypeDefinition holder = MonoModRule.Modder.FindType("class_250").Resolve();
+        MethodDefinition m = holder.Methods.First((m) => m.Name.Equals("AugmentDirectoryName"));
 
-    }
-
-    public static void PatchScoreManagerLoad(MethodDefinition method, CustomAttribute attrib)
-    {
-        MonoModRule.Modder.Log("Patching score manager");
-        if (!method.HasBody)
-        {
-            Console.WriteLine("Failed to disable Steam submission; no body");
-            throw new Exception();
-        }
-
-        ILCursor gremlin = new(new ILContext(method));
-
-        if (!gremlin.TryGotoNext(MoveType.After, instr => instr.Match(OpCodes.Brfalse_S))
-            || !gremlin.TryGotoNext(MoveType.After, instr => instr.Match(OpCodes.Brfalse_S))
-            || !gremlin.TryGotoNext(MoveType.After, instr => instr.Match(OpCodes.Brfalse_S)))
-        {
-            Console.WriteLine("Failed to disable Steam submission; no 3rd branch");
-            throw new Exception();
-        }
-        // premature return;
-        gremlin.Emit(OpCodes.Ret);
+        cursor.Emit(OpCodes.Ldloc_0);
+        cursor.Emit(OpCodes.Callvirt, m);
+        cursor.Emit(OpCodes.Stloc_0);
     }
 }

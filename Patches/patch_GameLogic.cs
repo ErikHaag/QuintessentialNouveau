@@ -5,11 +5,11 @@
 
 class patch_GameLogic
 {
-    public extern void orig_method_977();
-    public void method_977()
+    public extern void orig_method_978();
+    public void method_978()
     {
         QuintessentialLoader.PreInit();
-        orig_method_977();
-        //QuintessentialLoader.PostLoad();
+        orig_method_978();
+        QuintessentialLoader.PostLoad();
     }
 }
