@@ -32,25 +32,6 @@ public class QuintessentialLoader
             Logger.Init();
             Logger.Log($"Quintessential Nouveau v{VersionString}");
             Logger.Log("Starting pre-init loading");
-
-            QApi.Init();
-
-            if (!Directory.Exists(PathMods))
-                Directory.CreateDirectory(PathMods);
-
-            if (Directory.Exists(PathUnpackedMods))
-                Directory.Delete(PathUnpackedMods, true);
-            Directory.CreateDirectory(PathUnpackedMods);
-
-            PathBlacklist = Path.Combine(PathMods, "blacklist.txt");
-            if (File.Exists(PathBlacklist))
-                blacklisted = File.ReadAllLines(PathBlacklist).Select(l => (l.StartsWith("#") ? "" : l).Trim()).ToList();
-            else
-            {
-                File.WriteAllText(PathBlacklist, @"# This is the blacklist. Lines starting with # are ignored.
-ExampleFolderThatIWantToBlacklist
-SomeZipIDontLike.zip");
-            }
         }
         catch (Exception e)
         {
@@ -66,6 +47,19 @@ SomeZipIDontLike.zip");
     public static void PostLoad()
     {
         Logger.Log("Hi!");
-        Logger.Log(class_264.field_2186);
+        Logger.Log(class_194.field_1865);
+    }
+
+    public static void LoadPuzzleContent()
+    {
+        Logger.Log("Test B!");
+    }
+
+    public static void Unload(int exitCode)
+    {
+        Logger.Log(class_194.field_1865);
+        Logger.Log($"EC: {exitCode}");
+        Logger.Log("Unloading!");
+
     }
 }

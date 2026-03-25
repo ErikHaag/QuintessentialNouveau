@@ -12,6 +12,9 @@ namespace MonoMod;
 [MonoModCustomMethodAttribute(nameof(MonoModRules.PatchSavePath))]
 class PatchSavePath : Attribute { }
 
+[MonoModCustomMethodAttribute(nameof(MonoModRules.PatchSettingsInit))]
+class PatchSettingsInit : Attribute { }
+
 public class MonoModRules
 {
     public static void PatchSavePath(MethodDefinition method, CustomAttribute attrib)
@@ -23,10 +26,8 @@ public class MonoModRules
             throw new Exception();
         }
 
-        Console.WriteLine("A");
-        ILCursor cursor = new(new ILContext(method));
-        Console.WriteLine("B");
-        if (!cursor.TryGotoNext(MoveType.After,
+        ILCursor gremlin = new(new ILContext(method));
+        if (!gremlin.TryGotoNext(MoveType.After,
             instr => instr.MatchLdstr("NonSteamUser"),
             instr => instr.MatchStloc(0),
             instr => instr.MatchNop()))
@@ -34,14 +35,37 @@ public class MonoModRules
             Console.WriteLine("Failed to mod save path; No static string load.");
             throw new Exception();
         }
-        Console.WriteLine("C");
-        cursor.MoveAfterLabels();
+        gremlin.MoveAfterLabels();
 
-        TypeDefinition holder = MonoModRule.Modder.FindType("class_250").Resolve();
-        MethodDefinition m = holder.Methods.First((m) => m.Name.Equals("AugmentDirectoryName"));
+        TypeDefinition holder = MonoModRule.Modder.FindType("class_107").Resolve();
+        MethodDefinition ADNMethod = holder.Methods.First((m) => m.Name.Equals("AugmentDirectoryName"));
 
-        cursor.Emit(OpCodes.Ldloc_0);
-        cursor.Emit(OpCodes.Callvirt, m);
-        cursor.Emit(OpCodes.Stloc_0);
+        gremlin.Emit(OpCodes.Ldloc_0);
+        gremlin.Emit(OpCodes.Callvirt, ADNMethod);
+        gremlin.Emit(OpCodes.Stloc_0);
+    }
+
+    public static void PatchSettingsInit(MethodDefinition method, CustomAttribute attrib)
+    {
+        MonoModRule.Modder.Log("Patching settings");
+        if (!method.HasBody)
+        {
+            Console.WriteLine("Failed to patch settings; No body.");
+            throw new Exception();
+        }
+
+        ILCursor gremlin = new(new ILContext(method));
+
+        if (!gremlin.TryGotoNext(MoveType.Before,
+            instr => instr.MatchLdcI4(1),
+            instr => instr.MatchStsfld("class_233", "field_2099")))
+        {
+            Console.WriteLine("Failed to patch settings; No assignment.");
+            throw new Exception();
+        }
+
+        gremlin.Remove();
+        gremlin.Emit(OpCodes.Ldc_I4_0);
+
     }
 }

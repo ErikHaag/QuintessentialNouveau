@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
 	  <RootNamespace />
 	  <AssemblyName>Quintessential</AssemblyName>
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -21,14 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <Reference Include="Ionic.Zip.Reduced">
-		  <HintPath>$(OpusDir)\Ionic.Zip.Reduced.dll</HintPath>
-		  <CopyLocal>False</CopyLocal>
-	  </Reference>
 	  <Reference Include="Lightning">
-		  <HintPath>$(OpusDir)\IntermediaryLightning.exe</HintPath>
-		  <Private>false</Private>
-		  <CopyLocal>False</CopyLocal>
+	    <HintPath>$(OpusDir)\IntermediaryLightning.exe</HintPath>
+	  </Reference>
+	  <Reference Include="Ionic.Zip.Reduced">
+	    <HintPath>$(OpusDir)\Ionic.Zip.Reduced.dll</HintPath>
 	  </Reference>
 	  <Reference Include="Mono.Cecil">
 		  <HintPath>$(OpusDir)\Mono.Cecil.dll</HintPath>

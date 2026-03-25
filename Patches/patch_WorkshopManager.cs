@@ -3,5 +3,9 @@
 
 class patch_WorkshopManager
 {
-    
+    public void method_2299()
+    {
+        ((WorkshopManager)(object)this).method_2303();
+        ((WorkshopManager)(object)this).method_2304();
+    }
 }
